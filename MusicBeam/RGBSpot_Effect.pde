@@ -12,33 +12,37 @@ class RGBSpot_Effect extends Effect
   {
     super(ctrl, y);
 
-    manualButton = cp5.addButton("manual"+getName()).setSize(195, 195).setPosition(0, 5).setGroup(controlGroup);
-    manualButton.getCaptionLabel().set("Manual Trigger").align(ControlP5.CENTER, ControlP5.CENTER);
-
-    hatToggle = cp5.addToggle("hat"+getName()).setSize(195, 45).setPosition(200, 5).setGroup(controlGroup);
-    hatToggle.getCaptionLabel().set("Hat").align(ControlP5.CENTER, ControlP5.CENTER);
-
-    snareToggle = cp5.addToggle("snare"+getName()).setSize(195, 45).setPosition(200, 55).setGroup(controlGroup);
-    snareToggle.getCaptionLabel().set("Snare").align(ControlP5.CENTER, ControlP5.CENTER);
-
-    kickToggle = cp5.addToggle("kick"+getName()).setSize(195, 45).setPosition(200, 105).setGroup(controlGroup);
-    kickToggle.getCaptionLabel().set("Kick").align(ControlP5.CENTER, ControlP5.CENTER);
-    kickToggle.setState(true);
-
-    onsetToggle = cp5.addToggle("onset"+getName()).setSize(195, 45).setPosition(200, 155).setGroup(controlGroup);
-    onsetToggle.getCaptionLabel().set("Peak").align(ControlP5.CENTER, ControlP5.CENTER);
-    onsetToggle.setState(true);
-
-    delaySlider = cp5.addSlider("delay"+getName()).setRange(0.01,1).setValue(0.3).setPosition(0, 205).setSize(395, 45).setGroup(controlGroup);
-    delaySlider.getCaptionLabel().set("Speed").align(ControlP5.RIGHT, ControlP5.CENTER);
-
-    radiusSlider = cp5.addSlider("radius"+getName()).setRange(0, 1).setValue(0.3).setPosition(0, 255).setSize(395, 45).setGroup(controlGroup);
+    radiusSlider = cp5.addSlider("radius"+getName()).setRange(0, 1).setValue(0.5).setPosition(0, 5).setSize(395, 45).setGroup(controlGroup);
     radiusSlider.getCaptionLabel().set("Radius").align(ControlP5.RIGHT, ControlP5.CENTER);
+
+    weightSlider = cp5.addSlider("weight"+getName()).setRange(1, 50).setValue(15).setPosition(0, 55).setSize(395, 45).setGroup(controlGroup);
+    weightSlider.getCaptionLabel().set("Weight").align(ControlP5.RIGHT, ControlP5.CENTER);
+
+    speedSlider = cp5.addSlider("delay"+getName()).setRange(0.01,.99).setValue(0.1).setPosition(0, 105).setSize(395, 45).setGroup(controlGroup);
+    speedSlider.getCaptionLabel().set("Speed").align(ControlP5.RIGHT, ControlP5.CENTER);
+
+    hueSlider = cp5.addSlider("hue"+getName()).setRange(0, 360).setSize(295, 45).setPosition(50, 155).setGroup(controlGroup);
+    hueSlider.getCaptionLabel().set("hue").align(ControlP5.RIGHT, ControlP5.CENTER);
+    hueSlider.setValue(0);
+    HueControlListener hL = new HueControlListener();
+    hueSlider.addListener(hL);
+
+    aHueToggle = cp5.addToggle("ahue"+getName()).setPosition(0, 155).setSize(45, 45).setGroup(controlGroup);
+    aHueToggle.getCaptionLabel().set("A").align(ControlP5.CENTER, ControlP5.CENTER);
+    aHueToggle.setState(true);
+
+    bwToggle = ctrl.cp5.addToggle("bw"+getName()).setPosition(350, 155).setSize(45, 45).setGroup(controlGroup);
+    bwToggle.getCaptionLabel().set("BW").align(ControlP5.CENTER, ControlP5.CENTER);
+    bwToggle.setState(false);
+
   }
 
   float[] rx = {0,0};
   float[] ry = {0,0};
   float[] rc = {0,0};
+
+  float rotation = 0;
+  int direction = 1;
 
   float timer = 0;
 
@@ -46,38 +50,49 @@ class RGBSpot_Effect extends Effect
 
   Button manualButton;
 
-  Toggle hatToggle, snareToggle, kickToggle, onsetToggle;
+  Toggle aHueToggle, bwToggle, inverseToggle;
 
-  Slider delaySlider, radiusSlider;
+  Slider radiusSlider, weightSlider, hueSlider, rotationSpeedSlider, speedSlider;
 
   float radius = 0;
 
   void draw()
   {
     radius = stg.getMinRadius()*radiusSlider.getValue();
-    translate(-stg.width/2, -stg.height/2);
 
-    if (timer<=0 && (isTriggeredByBeat() || isTriggeredManually()))
+    // translate(stg.width/2, stg.height/2);
+
+    if (timer<=0 && isTriggeredByBeat())
     {
       rx[1] = rx[0];
       ry[1] = ry[0];
       rc[1] = rc[0];
-      rx[0] = random(radius/2, stg.width-radius/2);
-      ry[0] = random(radius/2, stg.height-radius/2);
-      while(rc[0]==rc[1])
-        rc[0] = random(0, 6);
-      timer = delaySlider.getValue()*frameRate*3;
+      rx[0] = random(-(stg.width-radius)/2, (stg.width-radius)/2);
+      ry[0] = random(radius/2, (stg.height-radius)/2);
+      rc[0] = hueSlider.getValue();
+      timer = speedSlider.getValue()*frameRate*3;
       fader = frameRate/4;
+      if (aHueToggle.getState())
+        hueSlider.setValue((hueSlider.getValue()+60)%360);
     }
 
-    stg.fill(60*rc[0], 100, 100);
+    stg.noFill();
+    stg.strokeWeight(weightSlider.getValue());
+    rotation = rotation + 0.01 * (direction / (1 - speedSlider.getValue())) % (PI * 2);
+    rotate(rotation);
+
+
+    stg.stroke(rc[0], bwToggle.getState()?0:100, 100);
     stg.ellipse(rx[0], ry[0], radius, radius);
-    translate(stg.width, stg.height);
+
+    stg.stroke((rc[0] + 180) % 360, bwToggle.getState()?0:100, 100);
     stg.ellipse(-rx[0], -ry[0], radius, radius);
-    translate(-stg.width, -stg.height);
-    stg.fill(60*rc[1], 100, 5*fader);
+
+    // Shadows
+    stg.stroke(rc[1], bwToggle.getState()?0:100, 5*fader);
     stg.ellipse(rx[1], ry[1], radius, radius);
-    translate(stg.width, stg.height);
+
+    stg.stroke((rc[1] + 180) % 360, bwToggle.getState()?0:100, 5*fader);
     stg.ellipse(-rx[1], -ry[1], radius, radius);
 
     if (timer>0)
@@ -86,17 +101,11 @@ class RGBSpot_Effect extends Effect
       fader--;
   }
 
-  boolean isTriggeredManually()
-  {
-    return manualButton.isPressed() || effect_manual_triggered;
-  }
-
   boolean isTriggeredByBeat()
   {
     return
-      hatToggle.getState() && isHat() ||
-      snareToggle.getState() && isSnare() ||
-      kickToggle.getState() && isKick() ||
-      onsetToggle.getState() && isOnset();
+      isHat() ||
+      isSnare() ||
+      isKick();
   }
 }

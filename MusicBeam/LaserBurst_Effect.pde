@@ -1,5 +1,5 @@
 class LaserBurst_Effect extends Effect
-{ 
+{
 
   LaserBurst_Effect(MusicBeam controller, int y)
   {
@@ -11,7 +11,7 @@ class LaserBurst_Effect extends Effect
 
     speedSlider = cp5.addSlider("speed"+getName()).setRange(0.01, 1).setValue(0.3).setPosition(0, 55).setSize(395, 45).setGroup(controlGroup);
     speedSlider.getCaptionLabel().set("Speed").align(ControlP5.RIGHT, ControlP5.CENTER);
-    
+
     rotationSpeedSlider = cp5.addSlider("rotationspeed"+getName()).setPosition(0, 105).setSize(395, 45).setGroup(controlGroup);
     rotationSpeedSlider.setRange(0, 1).setValue(0.3);
     rotationSpeedSlider.getCaptionLabel().set("Rotation Speed").align(ControlP5.RIGHT, ControlP5.CENTER);
@@ -22,7 +22,7 @@ class LaserBurst_Effect extends Effect
     hueSlider = cp5.addSlider("hue"+getName()).setRange(0, 360).setSize(295, 45).setPosition(50, 205).setGroup(controlGroup);
     hueSlider.getCaptionLabel().set("hue").align(ControlP5.RIGHT, ControlP5.CENTER);
     hueSlider.setValue(0);
-    HueControlListener hL = new HueControlListener(); 
+    HueControlListener hL = new HueControlListener();
     hueSlider.addListener(hL);
 
     aHueToggle = cp5.addToggle("ahue"+getName()).setPosition(0, 205).setSize(45, 45).setGroup(controlGroup);
@@ -40,7 +40,7 @@ class LaserBurst_Effect extends Effect
   {
     return "LaserBurst";
   }
-  
+
   char triggeredByKey() {
     return '7';
   }
@@ -52,7 +52,7 @@ class LaserBurst_Effect extends Effect
   LinkedList<Float[]> pts;
 
   Boolean rightSide = false;
-  
+
   float rotation = 0;
 
   void draw()
@@ -71,7 +71,7 @@ class LaserBurst_Effect extends Effect
       float r;
       if (inverseToggle.getState()) {
         r = (1-k[0])*stg.getMaxRadius();
-      } 
+      }
       else {
         r = k[0]*stg.getMaxRadius();
       }
@@ -84,7 +84,7 @@ class LaserBurst_Effect extends Effect
       else
         k[0]+=speedSlider.getValue()/100;
     }
-    if (aHueToggle.getState()&& (isKick()||isSnare()))
+    if (aHueToggle.getState() && (isKick()||isSnare()))
       hueSlider.setValue((hueSlider.getValue()+1)%360);
     rotation = (rotation+rotationSpeedSlider.getValue()/20)%PI;
   }
