@@ -3,7 +3,7 @@ class Derby_Effect extends Effect
   String getName() {
     return "Derby";
   }
-  
+
   char triggeredByKey() {
     return '5';
   }
@@ -13,6 +13,8 @@ class Derby_Effect extends Effect
   Toggle aHueToggle, mirrorToggle;
 
   float rotation = 0;
+
+  color[] pair = aesthetic.get(0);
 
   boolean moving = false;
 
@@ -39,7 +41,7 @@ class Derby_Effect extends Effect
     hueSlider = cp5.addSlider("hue"+getName()).setRange(0, 360).setSize(345, 45).setPosition(50, 205).setGroup(controlGroup);
     hueSlider.getCaptionLabel().set("hue").align(ControlP5.RIGHT, ControlP5.CENTER);
     hueSlider.setValue(0);
-    HueControlListener hL = new HueControlListener(); 
+    HueControlListener hL = new HueControlListener();
     hueSlider.addListener(hL);
 
     aHueToggle = cp5.addToggle("ahue"+getName()).setPosition(0, 205).setSize(45, 45).setGroup(controlGroup);
@@ -52,14 +54,15 @@ class Derby_Effect extends Effect
     float width = stg.width-weightSlider.getValue();
     float height = stg.height-weightSlider.getValue();
     float points = int(pointSlider.getValue());
-    
+
     int countTrigger = 0;
     if(isHat()) countTrigger++;
     if(isSnare()) countTrigger++;
     if(isKick()) countTrigger++;
 
     translate(-stg.width/2, -stg.height/2);
-    stg.fill(hueSlider.getValue(), 100, 100);
+    // stg.fill(hueSlider.getValue(), 100, 100);
+    stg.fill(pair[0]);
     for (int i=1;i<=points;i++)
     {
       stg.ellipse(weightSlider.getValue()/2+i*width/(points+1)+cos(rotation)*width/(points+1), weightSlider.getValue()/2+height/3-height/3*sin(rotation), weightSlider.getValue()*0.9, weightSlider.getValue()*0.9);
@@ -70,7 +73,8 @@ class Derby_Effect extends Effect
         stg.ellipse(weightSlider.getValue()/2+i*width/(points+1)-cos(rotation)*width/(points+1), weightSlider.getValue()/2+height/3-height/3*sin(rotation), weightSlider.getValue()*0.9, weightSlider.getValue()*0.9);
       }
 
-    stg.fill((hueSlider.getValue()+120)%360, 100, 100);
+    // stg.fill((hueSlider.getValue()+120)%360, 100, 100);
+    stg.fill(pair[1]);
     for (int i=1;i<=points;i++)
     {
       stg.ellipse(weightSlider.getValue()/2+i*width/(points+1)+cos(rotation)*width/(points+1), weightSlider.getValue()/2+2*height/3-height/3*-sin(rotation), weightSlider.getValue()*0.9, weightSlider.getValue()*0.9);
@@ -83,7 +87,10 @@ class Derby_Effect extends Effect
       }
 
     if (aHueToggle.getState() && countTrigger >= 2)
+    {
       hueSlider.setValue((hueSlider.getValue()+120)%360);
+      pair = aesthetic.get(int(random(aesthetic.size())));
+    }
 
     if (rotation%(PI/2)>0.1) {
       moving = false;
@@ -92,7 +99,7 @@ class Derby_Effect extends Effect
     else if (rotation%(PI/2)<=0.1 && (isKick() || isSnare() || isOnset() || moving)) {
       moving = true;
       rotation = rotation + speedSlider.getValue()/10%(2*PI);
-    } 
+    }
     else
     {
       rotation = rotation + getLevel()/100%(2*PI);

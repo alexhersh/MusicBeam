@@ -1,5 +1,5 @@
 class Snowstorm_Effect extends Effect
-{ 
+{
 
   Snowstorm_Effect(MusicBeam controller, int y)
   {
@@ -15,7 +15,7 @@ class Snowstorm_Effect extends Effect
     hueSlider = cp5.addSlider("hue"+getName()).setRange(0, 360).setSize(295, 45).setPosition(50, 105).setGroup(controlGroup);
     hueSlider.getCaptionLabel().set("hue").align(ControlP5.RIGHT, ControlP5.CENTER);
     hueSlider.setValue(0);
-    HueControlListener hL = new HueControlListener(); 
+    HueControlListener hL = new HueControlListener();
     hueSlider.addListener(hL);
 
     aHueToggle = cp5.addToggle("ahue"+getName()).setPosition(0, 105).setSize(45, 45).setGroup(controlGroup);
@@ -24,7 +24,11 @@ class Snowstorm_Effect extends Effect
 
     bwToggle = ctrl.cp5.addToggle("bw"+getName()).setPosition(350, 105).setSize(45, 45).setGroup(controlGroup);
     bwToggle.getCaptionLabel().set("BW").align(ControlP5.CENTER, ControlP5.CENTER);
-    bwToggle.setState(true);
+    bwToggle.setState(false);
+
+    gradToggle = cp5.addToggle("grad"+getName()).setPosition(0, 155).setSize(395, 45).setGroup(controlGroup);
+    gradToggle.getCaptionLabel().set("Gradient").align(ControlP5.CENTER, ControlP5.CENTER);
+    gradToggle.setState(true);
 
     calcPoints();
   }
@@ -33,14 +37,16 @@ class Snowstorm_Effect extends Effect
   {
     return "Snowstorm";
   }
-  
+
   char triggeredByKey() {
     return '6';
   }
 
   Slider radiusSlider, speedSlider, hueSlider;
 
-  Toggle aHueToggle, bwToggle;
+  Toggle aHueToggle, bwToggle, gradToggle;
+
+  color[] gradient = aesthetic.get(0);
 
   LinkedList<Float> r, x, y;
 
@@ -60,22 +66,30 @@ class Snowstorm_Effect extends Effect
       float posx, posy;
       posx = (2*radiusSlider.getValue()*(i%px))+x.get(i);
       posy = (2*radiusSlider.getValue()*(i/px))+y.get(i);
-      stg.fill((hueSlider.getValue())%360, bwToggle.getState()?0:100, 100);
+      if (gradToggle.getState())
+      {
+          stg.fill(lerpColor(gradient[0], gradient[1], posy/height));
+      }
+      else {
+        stg.fill((hueSlider.getValue())%360, bwToggle.getState()?0:100, 100);
+      }
       stg.ellipse(posx, posy, r.get(i), r.get(i));
     }
 
-    if (lauf>=(2*radiusSlider.getValue()/(speedSlider.getValue()*10))-1) {  
+    if (lauf>=(2*radiusSlider.getValue()/(speedSlider.getValue()*10))-1) {
       x.add(x.remove());
       y.add(y.remove());
       r.add(r.remove());
       lauf=0;
-    } 
+    }
     else
       lauf++;
     }
 
-    if (aHueToggle.getState()&& (isKick()&&isSnare()))
+    if (aHueToggle.getState() && (isKick()&&isSnare())) {
       hueSlider.setValue((hueSlider.getValue()+60)%360);
+      gradient = aesthetic.get(int(random(aesthetic.size())));
+    }
   }
 
   void calcPoints() {

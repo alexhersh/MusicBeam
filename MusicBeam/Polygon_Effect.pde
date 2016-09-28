@@ -4,7 +4,7 @@ class Polygon_Effect extends Effect
   {
     return "Polygon";
   }
-  
+
   char triggeredByKey() {
     return '8';
   }
@@ -13,12 +13,13 @@ class Polygon_Effect extends Effect
 
   float[] px, py, pxs, pys;
 
+  color[] pair = aesthetic.get(0);
 
   float rotation = 0;
 
   float controlradius = 200;
 
-  Toggle aHueToggle, bwToggle;
+  Toggle aHueToggle, bwToggle, gradToggle;
 
   Slider weightSlider, pointsSlider, speedSlider, hueSlider, rotationSpeedSlider;
 
@@ -41,17 +42,22 @@ class Polygon_Effect extends Effect
     hueSlider = cp5.addSlider("hue"+getName()).setRange(0, 360).setSize(345, 45).setPosition(50, 155).setGroup(controlGroup);
     hueSlider.getCaptionLabel().set("hue").align(ControlP5.RIGHT, ControlP5.CENTER);
     hueSlider.setValue(0);
-    HueControlListener hL = new HueControlListener(); 
+    HueControlListener hL = new HueControlListener();
     hueSlider.addListener(hL);
 
     aHueToggle = cp5.addToggle("ahue"+getName()).setPosition(0, 155).setSize(45, 45).setGroup(controlGroup);
     aHueToggle.getCaptionLabel().set("A").align(ControlP5.CENTER, ControlP5.CENTER);
     aHueToggle.setState(true);
+
+    gradToggle = cp5.addToggle("grad"+getName()).setPosition(0, 155).setSize(395, 45).setGroup(controlGroup);
+    gradToggle.getCaptionLabel().set("Gradient").align(ControlP5.CENTER, ControlP5.CENTER);
+    gradToggle.setState(true);
   }
 
   void draw() {
 
     int points = int(pointsSlider.getValue());
+    int direction = 1;
     float weight = weightSlider.getValue();
     float radius = stg.getMinRadius()-weight;
     float c = hueSlider.getValue();
@@ -60,7 +66,11 @@ class Polygon_Effect extends Effect
 
     rotate(rotation);
     for (int i=0; i < points; i++) {
-      stg.fill((((i%2)==1?120:0)+c)%360, 100, 100);
+      if (gradToggle.getState())
+        stg.fill((((i%2)==1?120:0)+c)%360, 100, 100);
+      else
+        stg.fill(pair[i%2]);
+
       if (i==points-1) {
         stg.quad(px[i], py[i], px[0], py[0], pxs[0], pys[0], pxs[i], pys[i]);
         stg.fill(-1);
@@ -72,10 +82,15 @@ class Polygon_Effect extends Effect
       stg.fill(-1);
       stg.ellipse((px[i]-pxs[i])/2+pxs[i], (py[i]-pys[i])/2+pys[i], 1.5*weight, 1.5*weight);
     }
-    rotation = (rotation+rotationSpeedSlider.getValue()/20)%(2*PI);
+    rotation = (rotation + rotationSpeedSlider.getValue() / 20) % (2 * PI);
 
-    if (aHueToggle.getState()&& (isKick()&&isSnare()))
+    if (aHueToggle.getState() && (isHat()&&isSnare()))
+    {
       hueSlider.setValue((hueSlider.getValue()+120)%360);
+      pair = aesthetic.get(int(random(aesthetic.size())));
+    }
+    if (isKick() && isSnare())
+      rotationSpeedSlider.setValue(rotationSpeedSlider.getValue()*-1);
   }
 
   // fill up arrays with ellipse coordinate data
@@ -92,11 +107,11 @@ class Polygon_Effect extends Effect
       px[i] = cos(radians(angle))*radius;
       py[i] = sin(radians(angle))*radius;
       pxs[i] = cos(radians(angle))*(radius+weightSlider.getValue());
-      pys[i] = sin(radians(angle))*(radius+weightSlider.getValue());  
+      pys[i] = sin(radians(angle))*(radius+weightSlider.getValue());
       angle+=360.0/points;
     }
   }
-  
+
  void keyPressed(char key, int keyCode)
   {
     super.keyPressed(key, keyCode);

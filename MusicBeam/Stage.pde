@@ -16,7 +16,7 @@ public class Stage extends PApplet {
   }
 
   public void settings() {
-    fullScreen(P2D, 2);
+    fullScreen(P2D, 1);
   }
 
   public void setup() {
@@ -40,11 +40,11 @@ public class Stage extends PApplet {
       if (effectArray[i].isActive())
         effectArray[i].refresh();
   }
-  
+
   public int getMaxRadius(){
     return int(sqrt(sq(width)+sq(height)));
   }
-  
+
    public int getMinRadius(){
      return height < width ? height : width;
    }

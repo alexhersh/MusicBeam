@@ -1,5 +1,5 @@
 class Scanner_Effect extends Effect
-{ 
+{
 
   Scanner_Effect(MusicBeam controller, int y)
   {
@@ -16,7 +16,7 @@ class Scanner_Effect extends Effect
     hueSlider = cp5.addSlider("hue"+getName()).setRange(0, 360).setSize(345, 45).setPosition(50, 105).setGroup(controlGroup);
     hueSlider.getCaptionLabel().set("hue").align(ControlP5.RIGHT, ControlP5.CENTER);
     hueSlider.setValue(0);
-    HueControlListener hL = new HueControlListener(); 
+    HueControlListener hL = new HueControlListener();
     hueSlider.addListener(hL);
 
     aHueToggle = cp5.addToggle("ahue"+getName()).setPosition(0, 105).setSize(45, 45).setGroup(controlGroup);
@@ -28,7 +28,7 @@ class Scanner_Effect extends Effect
   {
     return "Scanner";
   }
-  
+
   char triggeredByKey() {
     return '2';
   }
@@ -60,26 +60,26 @@ class Scanner_Effect extends Effect
     {
       rotate(PI/2);
       LinesDissolve();
-    } 
+    }
     else if (rotation<PI*7)
     {
       rotate(PI/2);
       LinesJoin();
-    } 
+    }
     else if (rotation<PI*8)
     {
       LinesDissolve();
       resetStage();
       rotate(PI/2);
-      stg.fill((hueSlider.getValue()+120)%360, 100, 100);
+      stg.fill((hueSlider.getValue()+180)%360, 100, 100);
       LinesDissolve();
-    } 
+    }
     else if (rotation<PI*9)
     {
       LinesJoin();
       resetStage();
       rotate(PI/2);
-      stg.fill((hueSlider.getValue()+120)%360, 100, 100);
+      stg.fill((hueSlider.getValue()+180)%360, 100, 100);
       LinesJoin();
     }
 
@@ -92,7 +92,7 @@ class Scanner_Effect extends Effect
     rotate(rotation);
     stg.rect(-stg.getMaxRadius()/2, -weightSlider.getValue()/2, stg.getMaxRadius(), weightSlider.getValue());
     rotate(PI/2);
-    stg.fill((hueSlider.getValue()+120)%360, 100, 100);
+    stg.fill((hueSlider.getValue()+180)%360, 100, 100);
     stg.rect(-stg.getMaxRadius()/2, -weightSlider.getValue()/2, stg.getMaxRadius(), weightSlider.getValue());
   }
 
@@ -101,7 +101,7 @@ class Scanner_Effect extends Effect
     rotate(-rotation);
     stg.rect(-stg.getMaxRadius()/2, -weightSlider.getValue()/2, stg.getMaxRadius(), weightSlider.getValue());
     rotate(-PI/2);
-    stg.fill((hueSlider.getValue()+120)%360, 100, 100);
+    stg.fill((hueSlider.getValue()+180)%360, 100, 100);
     stg.rect(-stg.getMaxRadius()/2, -weightSlider.getValue()/2, stg.getMaxRadius(), weightSlider.getValue());
   }
 
@@ -110,7 +110,7 @@ class Scanner_Effect extends Effect
     rotate(rotation);
     stg.rect(-stg.getMaxRadius()/2, -weightSlider.getValue()/2, stg.getMaxRadius(), weightSlider.getValue());
     rotate(-2*rotation);
-    stg.fill((hueSlider.getValue()+120)%360, 100, 100);
+    stg.fill((hueSlider.getValue()+180)%360, 100, 100);
     stg.rect(-stg.getMaxRadius()/2, -weightSlider.getValue()/2, stg.getMaxRadius(), weightSlider.getValue());
   }
 

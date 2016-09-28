@@ -67,13 +67,16 @@ class RGBSpot_Effect extends Effect
       rx[1] = rx[0];
       ry[1] = ry[0];
       rc[1] = rc[0];
-      rx[0] = random(-(stg.width-radius)/2, (stg.width-radius)/2);
-      ry[0] = random(radius/2, (stg.height-radius)/2);
+      rx[0] = random(-(stg.width - radius)/2, (stg.width - radius)/2);
+      ry[0] = random(0, (stg.height - height)/2);
       rc[0] = hueSlider.getValue();
-      timer = speedSlider.getValue()*frameRate*3;
+      timer = speedSlider.getValue() * frameRate * 3;
       fader = frameRate/4;
       if (aHueToggle.getState())
+      {
         hueSlider.setValue((hueSlider.getValue()+60)%360);
+        direction *= -1;
+      }
     }
 
     stg.noFill();
