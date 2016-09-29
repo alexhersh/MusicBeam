@@ -35,11 +35,15 @@ class RGBSpot_Effect extends Effect
     bwToggle.getCaptionLabel().set("BW").align(ControlP5.CENTER, ControlP5.CENTER);
     bwToggle.setState(false);
 
+    gradToggle = cp5.addToggle("grad"+getName()).setPosition(0, 205).setSize(395, 45).setGroup(controlGroup);
+    gradToggle.getCaptionLabel().set("Aesthetic").align(ControlP5.CENTER, ControlP5.CENTER);
+    gradToggle.setState(true);
   }
 
   float[] rx = {0,0};
   float[] ry = {0,0};
-  float[] rc = {0,0};
+  color[] rc1 = {0,0};
+  color[] rc2 = {0,0};
 
   float rotation = 0;
   int direction = 1;
@@ -50,9 +54,11 @@ class RGBSpot_Effect extends Effect
 
   Button manualButton;
 
-  Toggle aHueToggle, bwToggle, inverseToggle;
+  Toggle aHueToggle, bwToggle, gradToggle;
 
   Slider radiusSlider, weightSlider, hueSlider, rotationSpeedSlider, speedSlider;
+
+  color[] pair = aesthetic.get(0);
 
   float radius = 0;
 
@@ -66,17 +72,30 @@ class RGBSpot_Effect extends Effect
     {
       rx[1] = rx[0];
       ry[1] = ry[0];
-      rc[1] = rc[0];
+      rc1[1] = rc1[0];
+      rc2[1] = rc2[0];
       rx[0] = random(-(stg.width - radius)/2, (stg.width - radius)/2);
       ry[0] = random(0, (stg.height - height)/2);
-      rc[0] = hueSlider.getValue();
+
+      if (gradToggle.getState())
+      {
+        rc1[0] = pair[0];
+        rc2[0] = pair[1];
+      } else {
+        rc1[0] = color(hueSlider.getValue(), bwToggle.getState()?0:100, 100);
+        rc2[0] = color(hueSlider.getValue() + 180, bwToggle.getState()?0:100, 100);
+      }
+
       timer = speedSlider.getValue() * frameRate * 3;
       fader = frameRate/4;
+
       if (aHueToggle.getState())
       {
         hueSlider.setValue((hueSlider.getValue()+60)%360);
+        pair = aesthetic.get(int(random(aesthetic.size())));
         direction *= -1;
       }
+
     }
 
     stg.noFill();
@@ -85,17 +104,17 @@ class RGBSpot_Effect extends Effect
     rotate(rotation);
 
 
-    stg.stroke(rc[0], bwToggle.getState()?0:100, 100);
+    stg.stroke(rc1[0]);
     stg.ellipse(rx[0], ry[0], radius, radius);
 
-    stg.stroke((rc[0] + 180) % 360, bwToggle.getState()?0:100, 100);
+    stg.stroke(rc2[0]);
     stg.ellipse(-rx[0], -ry[0], radius, radius);
 
     // Shadows
-    stg.stroke(rc[1], bwToggle.getState()?0:100, 5*fader);
+    stg.stroke(rc1[1], 5*fader);
     stg.ellipse(rx[1], ry[1], radius, radius);
 
-    stg.stroke((rc[1] + 180) % 360, bwToggle.getState()?0:100, 5*fader);
+    stg.stroke(rc2[1], 5*fader);
     stg.ellipse(-rx[1], -ry[1], radius, radius);
 
     if (timer>0)

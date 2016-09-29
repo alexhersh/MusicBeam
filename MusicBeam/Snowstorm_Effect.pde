@@ -27,7 +27,7 @@ class Snowstorm_Effect extends Effect
     bwToggle.setState(false);
 
     gradToggle = cp5.addToggle("grad"+getName()).setPosition(0, 155).setSize(395, 45).setGroup(controlGroup);
-    gradToggle.getCaptionLabel().set("Gradient").align(ControlP5.CENTER, ControlP5.CENTER);
+    gradToggle.getCaptionLabel().set("Aesthetic").align(ControlP5.CENTER, ControlP5.CENTER);
     gradToggle.setState(true);
 
     calcPoints();

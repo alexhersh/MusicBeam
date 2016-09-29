@@ -3,18 +3,24 @@ import controlP5.Controller;
 
 public abstract class Effect
 {
-  color[] cyanPink = {#FC00FF, #00DBDE};
-  color[] purpRed = {#7B4397, #dd2430};
-  color[] blueGreen = {#4ce288, #44d8e7};
-  color[] orangePurp = {#FFA17F, #a77cd9};
-  color[] orangeBlue = {#FFA17F, #57faff};
+  color[] pinkCyan = {#FC00FF, #57FAFF};
+  color[] pinkPurp = {#f9abfa, #470593};
+  color[] orangePurp = {#FFA17F, #A77CD9};
+  color[] orangeCyan = {#FFA17F, #57FAFF};
+  color[] greenCyan = {#4CE288, #57FAFF};
+  color[] greenPurp = {#2ced79, #ce57ff};
+  color[] blueRed = {#4749FC, #ff3d4a};
+  color[] yellPink = {#eaf600, #ff3dec};
 
   ArrayList<color[]> aesthetic = new ArrayList<color[]>() {{
-      add(cyanPink);
-      add(purpRed);
-      add(blueGreen);
+      add(pinkCyan);
+      add(pinkPurp);
       add(orangePurp);
-      add(orangeBlue);
+      add(orangeCyan);
+      add(greenCyan);
+      add(greenPurp);
+      add(blueRed);
+      add(yellPink);
     }};
 
   MusicBeam ctrl;
